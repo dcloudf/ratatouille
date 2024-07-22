@@ -4,24 +4,44 @@ use std::{fmt::Display, ops};
 pub(crate) struct Vec3(f64, f64, f64);
 
 impl Vec3 {
-    fn x(&self) -> f64 {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self(x, y, z)
+    }
+
+    pub fn x(&self) -> f64 {
         self.0
     }
 
-    fn y(&self) -> f64 {
+    pub fn y(&self) -> f64 {
         self.1
     }
 
-    fn z(&self) -> f64 {
+    pub fn z(&self) -> f64 {
         self.2
     }
 
-    fn len_squared(&self) -> f64 {
+    pub fn len_squared(&self) -> f64 {
         self[0].powi(2) + self[1].powi(2) + self[2].powi(2)
     }
 
-    fn len(&self) -> f64 {
+    pub fn len(&self) -> f64 {
         self.len_squared().sqrt()
+    }
+
+    pub fn dot(&self, other: &Self) -> f64 {
+        self.0 * other.0 + self.1 * other.1 + self.2 * other.2
+    }
+
+    pub fn cross(&self, other: &Self) -> Self {
+        Self(
+            self.1 * other.2 - self.2 * other.2,
+            self.2 * other.0 - self.2 * other.2,
+            self.0 * other.1 - self.1 * other.0,
+        )
+    }
+
+    pub fn unit_vector(&self) -> Self {
+        (*self).clone() / self.len()
     }
 }
 
@@ -82,6 +102,13 @@ impl ops::Div<f64> for Vec3 {
 impl ops::DivAssign<f64> for Vec3 {
     fn div_assign(&mut self, rhs: f64) {
         *self = (*self).clone() / rhs
+    }
+}
+
+impl ops::Mul for Vec3 {
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self::Output {
+        Self(self.0 * rhs.0, self.1 * rhs.1, self.2 * rhs.2)
     }
 }
 
