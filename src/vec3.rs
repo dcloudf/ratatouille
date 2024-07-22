@@ -56,9 +56,9 @@ impl ops::Index<usize> for Vec3 {
 
     fn index(&self, index: usize) -> &Self::Output {
         match index {
-            0 => return &self.0,
-            1 => return &self.1,
-            2 => return &self.2,
+            0 => &self.0,
+            1 => &self.1,
+            2 => &self.2,
             _ => panic!("Index out of bonds. Consider index in range [0;2]"),
         }
     }
