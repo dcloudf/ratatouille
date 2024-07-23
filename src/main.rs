@@ -4,6 +4,7 @@ use std::io::{self, BufWriter, Write};
 pub(crate) use vec3::Vec3;
 
 pub mod color;
+pub mod ray;
 pub mod vec3;
 
 fn main() -> io::Result<()> {
