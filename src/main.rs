@@ -11,7 +11,7 @@ pub mod vec3;
 fn hit_sphere(center: &Vec3, raduis: f64, r: &Ray) -> bool {
     let oc = (*center).clone() - r.origin();
     let a = r.direction().dot(&r.direction());
-    let b = -2.0f64 * r.direction().dot(&oc);
+    let b = -2f64 * r.direction().dot(&oc);
     let c = oc.dot(&oc) - raduis * raduis;
     let discriminant = b * b - 2f64 * a * c;
     discriminant >= 0f64
