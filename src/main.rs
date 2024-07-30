@@ -5,7 +5,9 @@ use std::io::{self, BufWriter, Write};
 pub(crate) use vec3::Vec3;
 
 pub mod color;
+pub mod hittable;
 pub mod ray;
+pub mod sphere;
 pub mod vec3;
 
 fn hit_sphere(center: &Vec3, raduis: f64, r: &Ray) -> f64 {
