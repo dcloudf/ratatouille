@@ -10,12 +10,12 @@ pub mod vec3;
 
 fn hit_sphere(center: &Vec3, raduis: f64, r: &Ray) -> f64 {
     let oc = (*center).clone() - r.origin;
-    let a = r.direction.dot(&r.direction);
-    let b = -2f64 * r.direction.dot(&oc);
-    let c = oc.dot(&oc) - raduis * raduis;
-    let discriminant = b * b - 4f64 * a * c;
+    let a = r.direction.len_squared();
+    let h = r.direction.dot(&oc);
+    let c = oc.len_squared() - raduis * raduis;
+    let discriminant = h * h - a * c;
     match discriminant {
-        0f64.. => return (-b - discriminant.sqrt()) / (a * 2f64),
+        0f64.. => return (h - discriminant.sqrt()) / a,
         _ => -1f64,
     }
 }
