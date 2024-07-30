@@ -1,6 +1,6 @@
 use std::{fmt::Display, ops};
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub(crate) struct Vec3(f64, f64, f64);
 
 impl Vec3 {
@@ -115,7 +115,7 @@ impl ops::Mul for Vec3 {
 impl ops::Mul<f64> for Vec3 {
     type Output = Self;
     fn mul(self, rhs: f64) -> Self::Output {
-        Self(self.0 * rhs, self.1 + rhs, self.2 + rhs)
+        Self(self.0 * rhs, self.1 * rhs, self.2 * rhs)
     }
 }
 

@@ -1,27 +1,32 @@
 use crate::vec3::Vec3;
 
 pub(crate) struct Ray {
-    orig: Vec3,
-    dir: Vec3,
+    pub origin: Vec3,
+    pub direction: Vec3,
 }
 
 impl Ray {
-    pub(crate) fn new(origin: &Vec3, direction: &Vec3) -> Self {
-        Ray {
-            orig: origin.clone(),
-            dir: direction.clone(),
-        }
-    }
-
-    pub fn origin(&self) -> Vec3 {
-        self.orig.clone()
-    }
-
-    pub fn direction(&self) -> Vec3 {
-        self.dir.clone()
+    pub(crate) fn new(origin: Vec3, direction: Vec3) -> Self {
+        Ray { origin, direction }
     }
 
     pub fn at(&self, t: f64) -> Vec3 {
-        self.orig.clone() + self.dir.clone() * t
+        self.origin + self.direction * t
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ray_at() {
+        let l = Vec3::new(1.0, -1.0, 0.0);
+        let r = Vec3::new(5.0, 2.5, -4.0);
+
+        let r = Ray::new(l, r);
+        let result = r.at(2.);
+
+        assert_eq!(result, Vec3::new(11., 4., -8.));
     }
 }
