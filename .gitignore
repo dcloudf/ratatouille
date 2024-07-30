@@ -1,2 +1,7 @@
 /target
+/debug
+Cargo.lock
+**/*.rs.bk
+.DS_Store
+# test images
 *.ppm
