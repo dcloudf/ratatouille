@@ -14,18 +14,6 @@ pub mod ray;
 pub mod sphere;
 pub mod vec3;
 
-fn hit_sphere(center: &Vec3, raduis: f64, r: &Ray) -> f64 {
-    let oc = (*center).clone() - r.origin;
-    let a = r.direction.len_squared();
-    let h = r.direction.dot(&oc);
-    let c = oc.len_squared() - raduis * raduis;
-    let discriminant = h * h - a * c;
-    match discriminant {
-        0f64.. => return (h - discriminant.sqrt()) / a,
-        _ => -1f64,
-    }
-}
-
 fn ray_color(r: &Ray, world: &dyn Hittable) -> Vec3 {
     if let Some(rec) = world.hit(r, 0f64, f64::MAX) {
         return (rec.normal + Vec3::new(1f64, 1f64, 1f64)) * 0.5;
