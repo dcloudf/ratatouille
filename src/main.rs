@@ -1,7 +1,11 @@
 pub(crate) use color::write_color;
+use core::f64;
+use hittable::{Hittable, HittableList};
 use ray::Ray;
+use sphere::Sphere;
 use std::fs::File;
 use std::io::{self, BufWriter, Write};
+use std::rc::Rc;
 pub(crate) use vec3::Vec3;
 
 pub mod color;
@@ -22,11 +26,9 @@ fn hit_sphere(center: &Vec3, raduis: f64, r: &Ray) -> f64 {
     }
 }
 
-fn ray_color(r: &Ray) -> Vec3 {
-    let t = hit_sphere(&Vec3::new(0f64, 0f64, -1f64), 0.5, r);
-    if t > 0.0 {
-        let N = r.at(t) - Vec3::new(0f64, 0f64, -1f64);
-        return Vec3::new(N.x() + 1f64, N.y() + 1f64, N.z() + 1f64) * 0.5;
+fn ray_color(r: &Ray, world: &dyn Hittable) -> Vec3 {
+    if let Some(rec) = world.hit(r, 0f64, f64::MAX) {
+        return (rec.normal + Vec3::new(1f64, 1f64, 1f64)) * 0.5;
     }
 
     let unit_direction = r.direction.unit_vector();
@@ -41,6 +43,10 @@ fn main() -> io::Result<()> {
         ..=1f64 => 1,
         n => n as i64,
     };
+
+    let mut world = HittableList::default();
+    world.add(Rc::new(Sphere::new(Vec3::new(0f64, 0f64, -1f64), 0.5)));
+    world.add(Rc::new(Sphere::new(Vec3::new(0f64, -100.5, -1f64), 100.)));
 
     let focal_length = 1.0;
     let viewport_height = 2.0;
@@ -72,7 +78,7 @@ fn main() -> io::Result<()> {
             let ray_direction = pixel_center.clone() - camera_center.clone();
             let r = Ray::new(camera_center, ray_direction);
 
-            let pixel_color = ray_color(&r);
+            let pixel_color = ray_color(&r, &world);
             write_color(&mut writer, pixel_color)?;
         }
     }
