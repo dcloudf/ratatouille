@@ -1,21 +1,23 @@
-pub(crate) use color::write_color;
-use core::f64;
-use hittable::{Hittable, HittableList};
-use ray::Ray;
-use sphere::Sphere;
 use std::fs::File;
 use std::io::{self, BufWriter, Write};
 use std::rc::Rc;
-pub(crate) use vec3::Vec3;
+
+use crate::color::write_color;
+use crate::hittable::{Hittable, HittableList};
+use crate::interval::Interval;
+use crate::ray::Ray;
+use crate::sphere::Sphere;
+use crate::vec3::Vec3;
 
 pub mod color;
 pub mod hittable;
+pub mod interval;
 pub mod ray;
 pub mod sphere;
 pub mod vec3;
 
 fn ray_color(r: &Ray, world: &dyn Hittable) -> Vec3 {
-    if let Some(rec) = world.hit(r, 0f64, f64::MAX) {
+    if let Some(rec) = world.hit(r, Interval::new(0f64, f64::MAX)) {
         return (rec.normal + Vec3::new(1f64, 1f64, 1f64)) * 0.5;
     }
 
