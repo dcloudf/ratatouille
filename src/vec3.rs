@@ -1,3 +1,4 @@
+use rand::prelude::*;
 use std::{fmt::Display, ops};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
@@ -42,6 +43,43 @@ impl Vec3 {
 
     pub fn unit_vector(&self) -> Self {
         (*self).clone() / self.len()
+    }
+
+    pub fn random() -> Self {
+        let mut rng = thread_rng();
+        let x: f64 = rng.gen();
+        let y: f64 = rng.gen();
+        let z: f64 = rng.gen();
+        Vec3::new(x, y, z)
+    }
+
+    pub fn random_from_range(min: f64, max: f64) -> Self {
+        let mut rng = thread_rng();
+        let x: f64 = rng.gen_range(min..max);
+        let y: f64 = rng.gen_range(min..max);
+        let z: f64 = rng.gen_range(min..max);
+        Vec3::new(x, y, z)
+    }
+
+    pub fn random_in_unit_sphere() -> Self {
+        loop {
+            let p = Vec3::random_from_range(-1., 1.);
+            if p.len_squared() < 1. {
+                return p;
+            }
+        }
+    }
+
+    pub fn random_unit_vector() -> Self {
+        Vec3::random_in_unit_sphere().unit_vector()
+    }
+
+    pub fn random_on_hemisphere(&self) -> Vec3 {
+        let on_unit_sphere = Vec3::random_unit_vector();
+        match on_unit_sphere.dot(self) > 0. {
+            true => on_unit_sphere,
+            false => -on_unit_sphere,
+        }
     }
 }
 
