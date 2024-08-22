@@ -5,10 +5,17 @@ use std::{
     io::{BufWriter, Result, Write},
 };
 
+pub(crate) fn linear_to_gamma(linear_component: f64) -> f64 {
+    match linear_component > 0. {
+        true => linear_component.sqrt(),
+        false => 0.,
+    }
+}
+
 pub(crate) fn write_color(writer: &mut BufWriter<File>, pixel_color: Vec3) -> Result<()> {
-    let r = pixel_color.x();
-    let g = pixel_color.y();
-    let b = pixel_color.z();
+    let r = linear_to_gamma(pixel_color.x());
+    let g = linear_to_gamma(pixel_color.y());
+    let b = linear_to_gamma(pixel_color.z());
 
     let intensity = Interval::new(0., 0.999);
     let rbyte = (256. * intensity.clamp(r)) as i32;
