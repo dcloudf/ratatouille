@@ -20,7 +20,7 @@ fn main() -> io::Result<()> {
     world.add(Rc::new(Sphere::new(Vec3::new(0f64, 0f64, -1f64), 0.5)));
     world.add(Rc::new(Sphere::new(Vec3::new(0f64, -100.5, -1f64), 100.)));
 
-    let camera = Camera::new(16.0 / 9.0, 400, 100);
+    let camera = Camera::new(16.0 / 9.0, 400, 100, 50);
     let file = File::create("image.ppm")?;
     let mut writer = BufWriter::new(file);
     camera.render(&world, &mut writer)
