@@ -6,7 +6,7 @@ use crate::ray::Ray;
 use crate::vec3::Vec3;
 
 #[derive(Clone)]
-pub(crate) struct HitRecord {
+pub struct HitRecord {
     pub(crate) p: Vec3,
     pub(crate) normal: Vec3,
     pub(crate) t: f64,
@@ -14,7 +14,7 @@ pub(crate) struct HitRecord {
     pub(crate) mat: Rc<dyn Scatterable>,
 }
 
-pub(crate) trait Hittable {
+pub trait Hittable {
     fn hit(&self, r: &Ray, ray_t: Interval) -> Option<HitRecord>;
 }
 

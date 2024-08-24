@@ -2,7 +2,7 @@ use rand::prelude::*;
 use std::{fmt::Display, ops};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub(crate) struct Vec3(f64, f64, f64);
+pub struct Vec3(f64, f64, f64);
 
 impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
@@ -87,8 +87,15 @@ impl Vec3 {
         }
     }
 
-    pub fn reflect(&self, n: Vec3) -> Vec3 {
-        *self - (n * self.dot(&n.clone()) * 2.)
+    pub fn reflect(&self, n: Vec3) -> Self {
+        *self - (n * self.dot(&n) * 2.)
+    }
+
+    pub fn refract(&self, n: Vec3, etai_over_etat: f64) -> Self {
+        let cos_theta = (-(*self)).dot(&n).min(1.0);
+        let r_out_perp = (n * cos_theta + *self) * etai_over_etat;
+        let r_out_parallel = n * -((1. - r_out_perp.len_squared()).abs().sqrt());
+        r_out_perp + r_out_parallel
     }
 }
 

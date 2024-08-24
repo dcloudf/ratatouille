@@ -1,6 +1,6 @@
 use crate::vec3::Vec3;
 
-pub(crate) struct Ray {
+pub struct Ray {
     pub origin: Vec3,
     pub direction: Vec3,
 }
