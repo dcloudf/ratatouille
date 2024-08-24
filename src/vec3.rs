@@ -25,6 +25,11 @@ impl Vec3 {
         self[0].powi(2) + self[1].powi(2) + self[2].powi(2)
     }
 
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        self[0] < s && self[1] < s && self[2] < s
+    }
+
     pub fn len(&self) -> f64 {
         self.len_squared().sqrt()
     }
@@ -80,6 +85,10 @@ impl Vec3 {
             true => on_unit_sphere,
             false => -on_unit_sphere,
         }
+    }
+
+    pub fn reflect(&self, n: Vec3) -> Vec3 {
+        *self - (n * self.dot(&n.clone()) * 2.)
     }
 }
 

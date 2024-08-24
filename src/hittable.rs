@@ -1,25 +1,17 @@
 use std::rc::Rc;
 
 use crate::interval::Interval;
+use crate::material::Scatterable;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
-#[derive(Default, Clone, Copy)]
+#[derive(Clone)]
 pub(crate) struct HitRecord {
     pub(crate) p: Vec3,
     pub(crate) normal: Vec3,
     pub(crate) t: f64,
     pub(crate) front_face: bool,
-}
-
-impl HitRecord {
-    pub(crate) fn set_face_normal(&mut self, r: &Ray, outward_normal: &Vec3) {
-        self.front_face = r.direction.dot(outward_normal) < 0f64;
-        self.normal = match self.front_face {
-            true => *outward_normal,
-            false => -(*outward_normal),
-        }
-    }
+    pub(crate) mat: Rc<dyn Scatterable>,
 }
 
 pub(crate) trait Hittable {
@@ -56,21 +48,16 @@ impl HittableList {
 
 impl Hittable for HittableList {
     fn hit(&self, r: &Ray, ray_t: Interval) -> Option<HitRecord> {
-        let mut hit_anything = false;
         let mut closest_so_far = ray_t.max;
-        let mut temp_rec = HitRecord::default();
+        let mut temp_rec = None;
 
         for object in &self.objects {
             if let Some(rec) = object.hit(r, Interval::new(ray_t.min, closest_so_far)) {
-                hit_anything = true;
                 closest_so_far = rec.t;
-                temp_rec = rec;
+                temp_rec = Some(rec);
             }
         }
 
-        match hit_anything {
-            true => Some(temp_rec),
-            false => None,
-        }
+        temp_rec
     }
 }
