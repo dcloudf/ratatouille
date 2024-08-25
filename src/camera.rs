@@ -11,6 +11,7 @@ pub struct Camera {
     pub image_width: u64,
     pub samples_per_pixel: u64,
     pub max_depth: i64,
+    pub vfov: f64,
     image_height: i64,
     pixel_samples_scale: f64,
     center: Vec3,
@@ -25,6 +26,7 @@ impl Camera {
         image_width: u64,
         samples_per_pixel: u64,
         max_depth: i64,
+        vfov: f64,
     ) -> Self {
         let image_height = match image_width as f64 / aspect_ratio {
             ..=1f64 => 1,
@@ -33,7 +35,8 @@ impl Camera {
         let pixel_samples_scale = 1. / samples_per_pixel as f64;
 
         let focal_length = 1.0;
-        let viewport_height = 2.0;
+        let h = f64::tan(f64::to_radians(vfov) / 2.);
+        let viewport_height = 2. * h * focal_length;
         let viewport_width = viewport_height * (image_width as f64 / image_height as f64);
         let center = Vec3::new(0f64, 0f64, 0f64);
 
@@ -55,6 +58,7 @@ impl Camera {
             image_width,
             samples_per_pixel,
             max_depth,
+            vfov,
             image_height,
             pixel_samples_scale,
             center,
