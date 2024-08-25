@@ -178,3 +178,26 @@ impl ops::MulAssign<f64> for Vec3 {
         *self = (*self).clone() * rhs
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_vec_refract() {
+        let v1 = Vec3::new(1., 2., -1.);
+        let v2 = Vec3::new(-1., 4., 0.);
+        let result = v1.refract(v2, 1.5);
+        let expected = Vec3::new(52.8197, -202.2789, -1.5);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_refract() {
+        let uv = Vec3::new(1.0, 1.0, 0.0);
+        let n = Vec3::new(-1.0, 0.0, 0.0);
+        let result = uv.refract(n, 1.0);
+        let expected = Vec3::new(0.0, 1.0, 0.0);
+        assert_eq!(result, expected);
+    }
+}

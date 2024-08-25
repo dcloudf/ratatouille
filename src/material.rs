@@ -90,8 +90,9 @@ impl Scatterable for Dielectric {
         };
         let unit_direction = r_in.direction.unit_vector();
         let cos_theta = (-unit_direction).dot(&rec.normal).min(1.0);
-        let sin_theta = (1. - cos_theta.powi(2)).sqrt();
-        let direction = match (ri * sin_theta > 1.) || reflectance(cos_theta, ri) > rng.gen() {
+        let sin_theta = (1. - cos_theta * cos_theta).sqrt();
+        let direction = match (ri * sin_theta > 1.) || reflectance(cos_theta, ri) > rng.gen::<f64>()
+        {
             true => unit_direction.reflect(rec.normal),
             false => unit_direction.refract(rec.normal, ri),
         };
@@ -100,5 +101,15 @@ impl Scatterable for Dielectric {
             attenuation,
             is_scattered: true,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_reflectance() {
+        assert_eq!(reflectance(0.0, 1.5), 1.0)
     }
 }
