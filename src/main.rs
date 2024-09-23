@@ -1,4 +1,3 @@
-use core::f64;
 use std::fs::File;
 use std::io::{self, BufWriter};
 use std::rc::Rc;
@@ -20,22 +19,49 @@ pub mod vec3;
 
 fn main() -> io::Result<()> {
     let mut world = HittableList::default();
-    let r = f64::cos(f64::consts::PI / 4.);
-    let material_left = Rc::new(Lambertian::new(Vec3::new(0., 0., 1.)));
-    let material_right = Rc::new(Lambertian::new(Vec3::new(1., 0., 0.)));
+
+    let material_ground = Rc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.)));
+    let material_center = Rc::new(Lambertian::new(Vec3::new(0.1, 0.2, 0.5)));
+    let material_left = Rc::new(Dielectric::new(1.5));
+    let material_bubble = Rc::new(Dielectric::new(1. / 1.5));
+    let material_right = Rc::new(Metal::new(Vec3::new(0.8, 0.6, 0.2), 1.));
 
     world.add(Rc::new(Sphere::new(
-        Vec3::new(-r, 0., -1.),
-        r,
+        Vec3::new(0., -100.5, -1.),
+        100.,
+        material_ground,
+    )));
+    world.add(Rc::new(Sphere::new(
+        Vec3::new(0., 0., -1.2),
+        0.5,
+        material_center,
+    )));
+    world.add(Rc::new(Sphere::new(
+        Vec3::new(-1., 0., -1.),
+        0.5,
         material_left,
     )));
     world.add(Rc::new(Sphere::new(
-        Vec3::new(r, 0., -1.),
-        r,
+        Vec3::new(-1., 0., -1.),
+        0.4,
+        material_bubble,
+    )));
+    world.add(Rc::new(Sphere::new(
+        Vec3::new(1., 0., -1.),
+        0.5,
         material_right,
     )));
 
-    let camera = Camera::new(16.0 / 9.0, 400, 100, 50, 90.);
+    let camera = Camera::new(
+        16.0 / 9.0,
+        400,
+        100,
+        50,
+        50.,
+        Vec3::new(-2., 2., 1.),
+        Vec3::new(0., 0., -1.),
+        Vec3::new(0., 1., 0.),
+    );
     let file = File::create("image.ppm")?;
     let mut writer = BufWriter::new(file);
     camera.render(&world, &mut writer)

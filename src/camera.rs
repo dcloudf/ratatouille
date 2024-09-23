@@ -12,6 +12,9 @@ pub struct Camera {
     pub samples_per_pixel: u64,
     pub max_depth: i64,
     pub vfov: f64,
+    pub lookfrom: Vec3,
+    pub lookat: Vec3,
+    pub vup: Vec3,
     image_height: i64,
     pixel_samples_scale: f64,
     center: Vec3,
@@ -27,6 +30,9 @@ impl Camera {
         samples_per_pixel: u64,
         max_depth: i64,
         vfov: f64,
+        lookfrom: Vec3,
+        lookat: Vec3,
+        vup: Vec3,
     ) -> Self {
         let image_height = match image_width as f64 / aspect_ratio {
             ..=1f64 => 1,
@@ -34,22 +40,26 @@ impl Camera {
         };
         let pixel_samples_scale = 1. / samples_per_pixel as f64;
 
-        let focal_length = 1.0;
+        let focal_length = (lookfrom - lookat).len();
         let h = f64::tan(f64::to_radians(vfov) / 2.);
         let viewport_height = 2. * h * focal_length;
         let viewport_width = viewport_height * (image_width as f64 / image_height as f64);
-        let center = Vec3::new(0f64, 0f64, 0f64);
+        let center = lookfrom;
 
-        let viewport_u = Vec3::new(viewport_width, 0f64, 0f64);
-        let viewport_v = Vec3::new(0f64, -viewport_height, 0f64);
+        let w = (lookfrom - lookat).unit_vector();
+        let u = vup.cross(&w).unit_vector();
+        let v = w.cross(&u);
+
+        let viewport_u = u * viewport_width;
+        let viewport_v = -v * viewport_height;
 
         let pixel_delta_u = viewport_u.clone() / image_width as f64;
         let pixel_delta_v = viewport_v.clone() / image_height as f64;
 
         let viewport_upper_left = center.clone()
-            - Vec3::new(0f64, 0f64, focal_length)
-            - (viewport_u.clone() / 2f64)
-            - (viewport_v.clone() / 2f64);
+            - (w * focal_length)
+            - (viewport_u.clone() / 2.)
+            - (viewport_v.clone() / 2.);
         let pixel00_loc =
             viewport_upper_left.clone() + (pixel_delta_u.clone() + pixel_delta_v.clone()) * 0.5;
 
@@ -65,6 +75,9 @@ impl Camera {
             pixel00_loc,
             pixel_delta_u,
             pixel_delta_v,
+            lookfrom,
+            lookat,
+            vup,
         }
     }
     pub fn render(&self, world: &dyn Hittable, mut writer: &mut BufWriter<File>) -> io::Result<()> {
