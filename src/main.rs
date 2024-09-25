@@ -1,68 +1,25 @@
-use std::fs::File;
-use std::io::{self, BufWriter};
-use std::rc::Rc;
+use std::{fs::File, io::Write, path::Path};
 
-use crate::camera::Camera;
-use crate::hittable::HittableList;
-use crate::material::{Dielectric, Lambertian, Metal};
-use crate::sphere::Sphere;
-use crate::vec3::Vec3;
+fn main() {
+    let image_width = 256;
+    let image_heigth = 256;
 
-pub mod camera;
-pub mod color;
-pub mod hittable;
-pub mod interval;
-pub mod material;
-pub mod ray;
-pub mod sphere;
-pub mod vec3;
-
-fn main() -> io::Result<()> {
-    let mut world = HittableList::default();
-
-    let material_ground = Rc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.)));
-    let material_center = Rc::new(Lambertian::new(Vec3::new(0.1, 0.2, 0.5)));
-    let material_left = Rc::new(Dielectric::new(1.5));
-    let material_bubble = Rc::new(Dielectric::new(1. / 1.5));
-    let material_right = Rc::new(Metal::new(Vec3::new(0.8, 0.6, 0.2), 1.));
-
-    world.add(Rc::new(Sphere::new(
-        Vec3::new(0., -100.5, -1.),
-        100.,
-        material_ground,
-    )));
-    world.add(Rc::new(Sphere::new(
-        Vec3::new(0., 0., -1.2),
-        0.5,
-        material_center,
-    )));
-    world.add(Rc::new(Sphere::new(
-        Vec3::new(-1., 0., -1.),
-        0.5,
-        material_left,
-    )));
-    world.add(Rc::new(Sphere::new(
-        Vec3::new(-1., 0., -1.),
-        0.4,
-        material_bubble,
-    )));
-    world.add(Rc::new(Sphere::new(
-        Vec3::new(1., 0., -1.),
-        0.5,
-        material_right,
-    )));
-
-    let camera = Camera::new(
-        16.0 / 9.0,
-        400,
-        100,
-        50,
-        50.,
-        Vec3::new(-2., 2., 1.),
-        Vec3::new(0., 0., -1.),
-        Vec3::new(0., 1., 0.),
-    );
-    let file = File::create("image.ppm")?;
-    let mut writer = BufWriter::new(file);
-    camera.render(&world, &mut writer)
+    let path = Path::new("test.ppm");
+    let mut file = File::create(&path).unwrap();
+    let _ = file.write(format!("P3\n{} {}\n255\n", image_width, image_heigth).as_bytes());
+    for j in 0..image_heigth {
+        for i in 0..image_width {
+            let _ = file
+                .write(
+                    format!(
+                        "{} {} {}\n",
+                        (256 * i / (image_width - 1)) as i64,
+                        (256 * j / (image_heigth - 1)) as i64,
+                        256 * 0
+                    )
+                    .as_bytes(),
+                )
+                .unwrap();
+        }
+    }
 }
